@@ -1,10 +1,10 @@
 <?php
 require('dbconnect.php');
 session_start();
-
+//クッキーが予め保存されていたら
 if ($_COOKIE['email'] != '') {
   $_POST['email'] = $_COOKIE['email'];
-  $_POST['email'] = $_COOKIE['password'];
+  $_POST['password'] = $_COOKIE['password'];
   $_POST['save'] = 'on';
 }
 
@@ -27,7 +27,7 @@ if (!empty($_POST)) {
       setcookie('email', $_POST['email'], time()+60*60*24*14);
       setcookie('password', $_POST['password'], time()+60*60*24*14);
     }
-
+    //投稿画面にジャンプ
       header('Location: index.php');
       exit();
     }else{
