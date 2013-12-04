@@ -72,7 +72,7 @@
         while ($post = mysql_fetch_assoc($posts)):
         $picture = htmlspecialchars($post['picture'], ENT_QUOTES, 'UTF-8');
         $name = htmlspecialchars($post['name'], ENT_QUOTES, 'UTF-8');
-        $message = htmlspecialchars($post['message'], ENT_QUOTES, 'UTF-8');
+        $message = str_replace("\n", "<br />", $post['message']);
         $created = htmlspecialchars($post['created'], ENT_QUOTES, 'UTF-8');
         ?>
 
