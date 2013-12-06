@@ -120,3 +120,16 @@ color:#f00;
 #tname {
 	color: #000;
 }
+
+div.msg img {
+	float: left;
+}
+
+div.msg p {
+	margin-left: 70px;
+	margin-bottom: 10px;
+}
+
+div.msg p#day {
+	color: ##0000ff;
+}
