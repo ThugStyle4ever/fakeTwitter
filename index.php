@@ -38,18 +38,26 @@
   if ($page == '') {
     $page = 1;
   }
+  //１より小さい値が入らないようにしている
   $page = max($page, 1);
+
+  //if ($page < 1) {  でもOK
+  //  $page = 1;
+  //}
+
+
   //最終ページを取得する
   $sql = 'SELECT COUNT(*) AS cnt FROM posts';
   $recordSet = mysql_query($sql);
-  $table = mysql_fetch_assoc($recordSet);
-  $maxPage = ceil($table['cnt'] / 5);
-  $page = min($page, $maxPage);
+  $table = mysql_fetch_assoc($recordSet); //mysql_num_rows($recordSet); ref.377
+  $maxPage = ceil($table['cnt'] / 5);     //$maxPage = ceil($tabele / 5);
+  $page = min($page, $maxPage);  //$maxPageより大きな値が入らないようにする
 
   $start = ($page - 1) * 5;
   $start = max(0, $start);
   // $sql = sprintf('SELECT m.name, m.picture, p. * FROM members m, posts p WHERE m.id=p.member_id ORDER BY p.created DESC'); sprintfは意味が無い
   $sql = sprintf('SELECT m.name, m.picture, p. * FROM members m, posts p WHERE m.id=p.member_id ORDER BY p.created DESC LIMIT %d, 5', $start);
+  // $sql = 'SELECT m.name, m.picture, p. * FROM members m, posts p WHERE m.id=p.member_id ORDER BY p.created DESC LIMIT '.$start.', 5'; sprintfを使用しない場合
   $posts = mysql_query($sql) or die(mysql_error()
     );
 
