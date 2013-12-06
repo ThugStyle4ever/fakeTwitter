@@ -5,7 +5,7 @@
   if (isset($_SESSION['id'])) {
     $id = $_GET['id'];
 
-  //投稿を削除する
+  //投稿を検査する
   $sql = sprintf('SELECT * FROM posts WHERE id="%d"',
     mysql_real_escape_string($id)
     );

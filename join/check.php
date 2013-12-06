@@ -1,6 +1,7 @@
 <?php
 session_start();
 require('../dbconnect.php');
+require('../func.php');
 
 	if (!isset($_SESSION['join'])) {
 		header('Location: index.php');
@@ -22,9 +23,9 @@ require('../dbconnect.php');
 			exit();
 	}
 
-	$name = htmlspecialchars($_SESSION['join']['name'],ENT_QUOTES,'UTF-8');
-	$email = htmlspecialchars($_SESSION['join']['email'],ENT_QUOTES,'UTF-8');
-	$image = htmlspecialchars($_SESSION['join']['image'],ENT_QUOTES,'UTF-8');
+	$name = h($_SESSION['join']['name']);
+	$email = h($_SESSION['join']['email']);
+	$image = h($_SESSION['join']['image']);
 ?>
 
 

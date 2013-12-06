@@ -1,5 +1,6 @@
 <?php
 	require('../dbconnect.php');
+	require('../func.php');
 	session_start();
 
 	if (!empty($_POST)) {
@@ -63,9 +64,9 @@
 		$error['rewrite'] = true;
 	}
 
-	$name = htmlspecialchars($_POST['name'],ENT_QUOTES,'UTF-8');
-	$email = htmlspecialchars($_POST['email'],ENT_QUOTES,'UTF-8');
-	$pass = htmlspecialchars($_POST['password'],ENT_QUOTES,'UTF-8');
+	$name = h($_POST['name']);
+	$email = h($_POST['email']);
+	$pass = h($_POST['password']);
 ?>
 
 

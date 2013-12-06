@@ -1,6 +1,7 @@
 <?php
   session_start();
   require('dbconnect.php');
+  require('func.php');
 
   if (isset($_SESSION['id']) && $_SESSION['time'] + 3600 > time()) {  //ログインして1時間以内かどうか
     //ログインしている
@@ -33,8 +34,22 @@
   }
 
   //投稿を取得する
+  $page = $_GET['page'];
+  if ($page == '') {
+    $page = 1;
+  }
+  $page = max($page, 1);
+  //最終ページを取得する
+  $sql = 'SELECT COUNT(*) AS cnt FROM posts';
+  $recordSet = mysql_query($sql);
+  $table = mysql_fetch_assoc($recordSet);
+  $maxPage = ceil($table['cnt'] / 5);
+  $page = min($page, $maxPage);
+
+  $start = ($page - 1) * 5;
+  $start = max(0, $start);
   // $sql = sprintf('SELECT m.name, m.picture, p. * FROM members m, posts p WHERE m.id=p.member_id ORDER BY p.created DESC'); sprintfは意味が無い
-  $sql = 'SELECT m.name, m.picture, p. * FROM members m, posts p WHERE m.id=p.member_id ORDER BY p.created DESC';
+  $sql = sprintf('SELECT m.name, m.picture, p. * FROM members m, posts p WHERE m.id=p.member_id ORDER BY p.created DESC LIMIT %d, 5', $start);
   $posts = mysql_query($sql) or die(mysql_error()
     );
 
@@ -46,12 +61,12 @@
       $record = mysql_query($sql) or die(mysql_error());
       $table = mysql_fetch_assoc($record);
       $message = '@'. $table['name']. '&nbsp;&nbsp;' . $table['message'];
-      $res = htmlspecialchars($_GET['res'], ENT_QUOTES, 'UTF-8');
+      $res = h($_GET['res']);
   }
-  //本文内のURLリンクを設定
-  function makeLink($value){
-    return mb_ereg_replace("(https?)(://[[:alnum:]\+\$\;¥?\.%,!#~*/:@&=_-]+)", '<a href="\1\2">\1\2</a>', $value);
-  }
+  //本文内のURLリンクを設定⇒func.phpに移動
+  //function makeLink($value){
+  //  return mb_ereg_replace("(https?)(://[[:alnum:]\+\$\;¥?\.%,!#~*/:@&=_-]+)", '<a href="\1\2">\1\2</a>', $value);
+  //}
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -88,12 +103,13 @@
         <?php
         while ($post = mysql_fetch_assoc($posts)):
 
-        $picture = htmlspecialchars($post['picture'], ENT_QUOTES, 'UTF-8');
-        $name = htmlspecialchars($post['name'], ENT_QUOTES, 'UTF-8');
+        $picture = h($post['picture']);
+        $name = h($post['name']);
         $messa = str_replace("\n", "<br />", $post['message']);
-        $created = htmlspecialchars($post['created'], ENT_QUOTES, 'UTF-8');
-        $id = htmlspecialchars($post['id'], ENT_QUOTES, 'UTF-8');
-        $rep = htmlspecialchars($post['reply_post_id'], ENT_QUOTES, 'UTF-8');
+        $created = h($post['created']);
+        $id = h($post['id']);
+        $repid = h($post['reply_post_id']);
+        $memid = h($post['member_id']);
         ?>
 
         <div class="msg">
@@ -103,18 +119,18 @@
             <span class="name" id="tname">(<?= $name ?>)</span>
             [<a href="index.php?res=<?= $id ?>">Re</a>]
           </p>
-          <p class="day" id="day"><a href="view.php?id=<?= $id ?><?= $created ?>"><?= $created ?></a>
+          <p class="day"><a href="view.php?id=<?= $id ?><?= $created ?>" style="color: #666666;"><?= $created ?></a>
 
           <?php
           if ($post['reply_post_id'] > 0):
           ?>
-          <a href="view.php?id=<?= $rep ?>">返信元のメッセージ</a>
+          <a href="view.php?id=<?= $repid ?>" style="color: #008080">返信元のメッセージ</a>
           <?php
           endif;
           ?>
 
           <?php
-            if ($_SESSION['id'] == $post['member_id']):
+            if ($_SESSION['id'] == $memid):
           ?>
             [<a href="delete.php?id=<?= $id ?>" style="color: #f33;">Delete</a>]
           <?php
@@ -126,6 +142,30 @@
         <?php
         endwhile;
         ?>
+        <ul class="paging">
+          <?php
+            if ($page > 1) {
+          ?>
+          <li><a href="index.php?page=<?= ($page - 1); ?>">前のページヘ</a></li>
+          <?php
+            }else{
+          ?>
+          <li>前のページヘ</li>
+          <?php
+          }
+          ?>
+          <?php
+            if ($page < $maxPage) {
+          ?>
+          <li><a href="index.php?page=<?= ($page + 1); ?>">次のページヘ</a></li>
+          <?php
+            }else{
+          ?>
+          <li>次のページヘ</li>
+          <?php
+          }
+          ?>
+        </ul>
       </div>
       <div id="foot">
         &copy;fakeTwitter&nbsp;2013&nbsp;all rights reserveed

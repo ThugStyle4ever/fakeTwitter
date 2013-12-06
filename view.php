@@ -1,6 +1,7 @@
 <?php
   session_start();
   require('dbconnect.php');
+  require('func.php');
 
   if (empty($_GET['id'])) {
       header('Location: index.php');
@@ -33,11 +34,11 @@
         <?php
         if ($post = mysql_fetch_assoc($posts)):
 
-        $picture = htmlspecialchars($post['picture'], ENT_QUOTES, 'UTF-8');
-        $name = htmlspecialchars($post['name'], ENT_QUOTES, 'UTF-8');
+        $picture = h($post['picture']);
+        $name = h($post['name']);
         $messa = str_replace("\n", "<br />", $post['message']);
-        $created = htmlspecialchars($post['created'], ENT_QUOTES, 'UTF-8');
-        $id = htmlspecialchars($post['id'], ENT_QUOTES, 'UTF-8');
+        $created = h($post['created']);
+        $id = h($post['id']);
         ?>
 
         <div class="msg">
